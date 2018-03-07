@@ -6,7 +6,7 @@
 // A valid csv file will have a header, and the tweeter column will be called “name”.
 
 //Allowed assumptions:
-// max  valid line length = no longer than the longest line in the csv file provided for Homework 3
+// max valid line length = no longer than the longest line in the csv file provided for Homework 3
 // max length of the file = 20,000 lines
 // max number of tweeters = no larger than the set of tweeters in the cl­tweets­short.csv file
 // a valid file will not have additional commas inside the tweet
@@ -18,27 +18,44 @@
 #include <string.h>
 #include <stdbool.h>
 
-int main(int argc, char* argv[]) {
-  printf("%s", argv[1]);
-  printf("<tweeter>: <count of tweets>n");
-
-}
-
-bool is_valid() {
+bool is_valid(char *input) {
+  if(!input) {
+    return false;
+  }
   //does it have a header and a column called name?
-  return false;
+  return true;
 }
 
-//returns column number that's titled "name"
-int get_tweeter_col() {
-  char *column_name = "name";
-  return 0;
+//returns 
+const char* getfield(char* line, int num)
+{
+    const char* tok;
+    //for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n"))
+    for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
+    {
+        if (!--num)
+            return tok;
+    }
+    return NULL;
 }
 
-char * calc_top_N_tweeters(int top_N) {
-  static char *list = "";
-  return list;
+
+int main(int argc, char** argv) {
+  printf("%s\n", argv[1]);
+  bool valid_input = is_valid(argv[1]);
+  printf("%s", "input valid?: ");
+  printf("%d\n", valid_input);
+
+  for(int i = 0; i < 10; i++) {
+    printf("<tweeter>: <count of tweets>\n");
+  }
+  
+
 }
+
+
+
+
 
 
 //
