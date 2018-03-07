@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef struct {
 	char *name;
@@ -24,6 +25,8 @@ typedef struct {
 } tweeter;
 
 int get_tweeter_col(char *line);
+const char* getfield(char* line, int num);
+tweeter* find_name(char *name, tweeter* tweeters);
 
 int main(int argc, char* argv[]) {
 
@@ -41,21 +44,30 @@ int main(int argc, char* argv[]) {
   		return -1;
   	}
 
-  	tweeter tweeters[20000];
+  	tweeter *tweeters = malloc(sizeof(tweeter) * 20000);
   	int tweeterCount = 0;
 
 
   	char line[1024];
   	fgets(line, 1024, fp);
 
-
   	int nameCol = get_tweeter_col(line);
   	printf("nameCol: %d\n", nameCol);
 
+  	char name[64];
+  	tweeter *curr = NULL;
 
-  // while (fgets(line, 1024, fp)) {
-  // 	char* temp = strdup(line); 
-  // }
+
+   	while (fgets(line, 1024, fp)) {
+   		strcpy(name, getfield(line, nameCol));
+   		//printf("current name: %s\n", (char*) getfield(line, nameCol));
+   		//curr = find_name(name, tweeters);
+   		//tweeters[tweeterCount] = malloc(sizeof(tweeter));
+   		strcpy(tweeters[tweeterCount].name, name);
+   		tweeters[tweeterCount].count = 1;
+   		tweeterCount++;
+
+   }
 
 
 
@@ -63,23 +75,28 @@ int main(int argc, char* argv[]) {
 
 }
 
-bool is_valid() {
-  //does it have a header and a column called name?
-  return false;
+tweeter* find_name(char *name, tweeter* tweeters) {
+
+	if (!name || !tweeters) {
+		return NULL;
+	}
+
+
+
+  return NULL;
 }
 
 
-// const char* getfield(char* line, int num)
-// {
-//     const char* tok;
-//     //for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n"))
-//     for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
-//     {
-//         if (!--num)
-//             return tok;
-//     }
-//     return NULL;
-// }
+const char* getfield(char* line, int num)
+{
+    const char* tok;
+    for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
+    {
+        if (!--num)
+            return tok;
+    }
+    return NULL;
+}
 
 //returns column number that's titled "name"
 int get_tweeter_col(char *line) {
@@ -99,7 +116,7 @@ int get_tweeter_col(char *line) {
 
 	for (; ; tok = strtok(NULL, ",\n")) {
 		if (strcmp(tok, name) == 0) {
-	  		return count;
+	  		return count + 1;
 	  	} else {
 	  		count++;
 	  	}
