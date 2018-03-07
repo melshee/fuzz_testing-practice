@@ -22,39 +22,77 @@ bool is_valid(char *input) {
   if(!input) {
     return false;
   }
-  //does it have a header and a column called name?
-  return true;
+
+typedef struct {
+	char *name;
+	int count;
+} tweeter;
+
+int get_tweeter_col(char *line);
+
+int main(int argc, char* argv[]) {
+
+	if (argc != 2) {
+		printf("usage: maxTweeter <filename.csv> \n");
+		return -1;
+	}
+
+  	printf("%s", argv[1]);
+  	printf("<tweeter>: <count of tweets>n\n");
+  	FILE *fp = fopen(argv[1], "r");
+
+  	if (!fp) {
+  		printf("Could not open file\n");
+  		return -1;
+  	}
+
+  	tweeter tweeters[20000];
+  	int tweeterCount = 0;
+
+
+  	char line[1024];
+  	fgets(line, 1024, fp);
+
+
+  	int nameCol = get_tweeter_col(line);
+  	printf("nameCol: %d\n", nameCol);
+
+
+  // while (fgets(line, 1024, fp)) {
+  // 	char* temp = strdup(line); 
+  // }
+
+
+
+  	fclose(fp);
+
 }
 
-//returns 
-const char* getfield(char* line, int num)
-{
-    const char* tok;
-    //for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n"))
-    for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
-    {
-        if (!--num)
-            return tok;
-    }
-    return NULL;
+//returns column number that's titled "name"
+int get_tweeter_col(char *line) {
+
+	if (!line)
+		return -1;
+
+ 	int count = 0;
+  	const char *tok;
+  	char name[7] = "\"name\"\0";
+  	tok = strtok(line, ",");
+
+  	if (strcmp(tok, "\"\"") != 0) {
+  		printf("Invalid Input Format\n");
+  		return -1;
+  	}
+
+	for (; ; tok = strtok(NULL, ",\n")) {
+		if (strcmp(tok, name) == 0) {
+	  		return count;
+	  	} else {
+	  		count++;
+	  	}
+	}
+	return -1;
 }
-
-
-int main(int argc, char** argv) {
-  printf("%s\n", argv[1]);
-  bool valid_input = is_valid(argv[1]);
-  printf("%s", "input valid?: ");
-  printf("%d\n", valid_input);
-
-  for(int i = 0; i < 10; i++) {
-    printf("<tweeter>: <count of tweets>\n");
-  }
-  
-
-}
-
-
-
 
 
 
