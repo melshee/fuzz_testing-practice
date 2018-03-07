@@ -18,9 +18,48 @@
 #include <string.h>
 #include <stdbool.h>
 
+typedef struct {
+	char *name;
+	int count;
+} tweeter;
+
+int get_tweeter_col(char *line);
+
 int main(int argc, char* argv[]) {
-  printf("%s", argv[1]);
-  printf("<tweeter>: <count of tweets>n");
+
+	if (argc != 2) {
+		printf("usage: maxTweeter <filename.csv> \n");
+		return -1;
+	}
+
+  	printf("%s", argv[1]);
+  	printf("<tweeter>: <count of tweets>n\n");
+  	FILE *fp = fopen(argv[1], "r");
+
+  	if (!fp) {
+  		printf("Could not open file\n");
+  		return -1;
+  	}
+
+  	tweeter tweeters[20000];
+  	int tweeterCount = 0;
+
+
+  	char line[1024];
+  	fgets(line, 1024, fp);
+
+
+  	int nameCol = get_tweeter_col(line);
+  	printf("nameCol: %d\n", nameCol);
+
+
+  // while (fgets(line, 1024, fp)) {
+  // 	char* temp = strdup(line); 
+  // }
+
+
+
+  	fclose(fp);
 
 }
 
@@ -29,10 +68,43 @@ bool is_valid() {
   return false;
 }
 
+
+// const char* getfield(char* line, int num)
+// {
+//     const char* tok;
+//     //for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n"))
+//     for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
+//     {
+//         if (!--num)
+//             return tok;
+//     }
+//     return NULL;
+// }
+
 //returns column number that's titled "name"
-int get_tweeter_col() {
-  char *column_name = "name";
-  return 0;
+int get_tweeter_col(char *line) {
+
+	if (!line)
+		return -1;
+
+ 	int count = 0;
+  	const char *tok;
+  	char name[7] = "\"name\"\0";
+  	tok = strtok(line, ",");
+
+  	if (strcmp(tok, "\"\"") != 0) {
+  		printf("Invalid Input Format\n");
+  		return -1;
+  	}
+
+	for (; ; tok = strtok(NULL, ",\n")) {
+		if (strcmp(tok, name) == 0) {
+	  		return count;
+	  	} else {
+	  		count++;
+	  	}
+	}
+	return -1;
 }
 
 char * calc_top_N_tweeters(int top_N) {
