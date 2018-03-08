@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
    	print_tweeters(tweeters, 10);
 
    	for(int i = 0; i < tweeterCount; i++) {
+   		free(tweeters[i]->name);
    		free(tweeters[i]);
    	}
    	free(tweeters);
