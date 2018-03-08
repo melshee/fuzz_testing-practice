@@ -60,6 +60,11 @@ int main(int argc, char* argv[]) {
    	//print_tweeters(tweeters, tweeterCount);
    	print_tweeters(tweeters, 10);
 
+   	for(int i = 0; i < tweeterCount; i++) {
+   		free(tweeters[i]);
+   	}
+   	free(tweeters);
+
 	fclose(fp);
   	return 0;
 }
