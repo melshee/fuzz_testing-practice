@@ -31,7 +31,9 @@ typedef struct {
 
 int get_tweeter_col(char *line);
 const char* getfield(char* line, int num);
-tweeter* find_name(char *name, tweeter* tweeters);
+int find_name(char *name, tweeter** tweeters, int tweeterCount);
+void sort_desc(tweeter **tweeters, int tweeterCount);
+void print_tweeters(tweeter **tweeters, int tweeterCount);
 
 int main(int argc, char* argv[]) {
 
@@ -40,8 +42,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-  	printf("%s", argv[1]);
-  	printf("<tweeter>: <count of tweets>n\n");
   	FILE *fp = fopen(argv[1], "r");
 
   	if (!fp) {
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
   		return -1;
   	}
 
-  	tweeter *tweeters = malloc(sizeof(tweeter) * 20000);
+  	tweeter **tweeters = malloc(sizeof(tweeter*) * 20000);
   	int tweeterCount = 0;
 
 
@@ -57,38 +57,70 @@ int main(int argc, char* argv[]) {
   	fgets(line, 1024, fp);
 
   	int nameCol = get_tweeter_col(line);
-  	printf("nameCol: %d\n", nameCol);
-
   	char name[64];
   	tweeter *curr = NULL;
 
 
    	while (fgets(line, 1024, fp)) {
+
    		strcpy(name, getfield(line, nameCol));
-   		//printf("current name: %s\n", (char*) getfield(line, nameCol));
-   		//curr = find_name(name, tweeters);
-   		//tweeters[tweeterCount] = malloc(sizeof(tweeter));
-   		strcpy(tweeters[tweeterCount].name, name);
-   		tweeters[tweeterCount].count = 1;
-   		tweeterCount++;
 
-   }
+   		if (find_name(name, tweeters, tweeterCount) == 1) {
+   			continue;
+   		} else {
+	   		tweeter *curr = malloc(sizeof(tweeter));
+	   		curr->name = malloc(strlen(name) + 1);
+	   		strcpy(curr->name, name);
+	   		curr->count = 1;
+	   		tweeters[tweeterCount] = curr;
+	   		tweeterCount++;
+   		}
+   	}
 
+   	sort_desc(tweeters, tweeterCount);
+   	//print_tweeters(tweeters, tweeterCount);
+   	print_tweeters(tweeters, 10);
 
-
-  	fclose(fp);
-
+	fclose(fp);
+  	return 0;
 }
 
-tweeter* find_name(char *name, tweeter* tweeters) {
+void print_tweeters(tweeter **tweeters, int tweeterCount) {
+	for (int i = 0; i < tweeterCount; i++) {
+		printf("%s: %d\n", tweeters[i]->name, tweeters[i]->count);
+	}
+	return;
+}
+
+void sort_desc(tweeter **tweeters, int tweeterCount) {
+
+	for (int i = 0; i < tweeterCount; i++) {                
+		for (int j = 0; j < tweeterCount; j++)          
+		{
+			if (tweeters[j]->count < tweeters[i]->count)             
+			{
+				tweeter *tmp = tweeters[i];       
+				tweeters[i] = tweeters[j];          
+				tweeters[j] = tmp;           
+			}
+		}
+	}
+	return;
+}
+
+int find_name(char *name, tweeter** tweeters, int tweeterCount) {
 
 	if (!name || !tweeters) {
-		return NULL;
+		return 0;
 	}
 
-
-
-  return NULL;
+	for (int i = 0; i < tweeterCount; i++) {
+		if (strcmp(tweeters[i]->name, name) == 0) {
+			tweeters[i]->count++;
+			return 1;
+		}
+	}
+	return 0;
 }
 
 
@@ -103,7 +135,6 @@ const char* getfield(char* line, int num)
     return NULL;
 }
 
-//returns column number that's titled "name"
 int get_tweeter_col(char *line) {
 
 	if (!line)
@@ -116,7 +147,7 @@ int get_tweeter_col(char *line) {
 
   	if (strcmp(tok, "\"\"") != 0) {
   		printf("Invalid Input Format\n");
-  		return -1;
+  		exit(1);
   	}
 
 	for (; ; tok = strtok(NULL, ",\n")) {
@@ -128,7 +159,3 @@ int get_tweeter_col(char *line) {
 	}
 	return -1;
 }
-
-
-
-//
