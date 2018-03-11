@@ -17,7 +17,7 @@ void print_tweeters(tweeter **tweeters, int tweeterCount);
 int main(int argc, char* argv[]) {
 
 	if (argc != 2) {
-		printf("usage: maxTweeter <filename.csv> \n");
+		printf("usage: maxTweeter <filename> \n");
 		return -1;
 	}
 
@@ -36,11 +36,27 @@ int main(int argc, char* argv[]) {
   	fgets(line, 1024, fp);
 
   	int nameCol = get_tweeter_col(line);
+
+  	if (nameCol == -1) {
+  		exit(1);
+  	}
+
   	char name[64];
   	tweeter *curr = NULL;
+  	int rows = 0;
 
 
    	while (fgets(line, 1024, fp)) {
+
+   		if (strlen(line) > 375) {
+   			printf("Invalid Input File: line length too long\n");
+   			return -1;
+   		}
+
+   		rows++;
+   		if (rows > 19999) {
+   			return -1;
+   		}
 
    		strcpy(name, getfield(line, nameCol));
 
@@ -54,6 +70,8 @@ int main(int argc, char* argv[]) {
 	   		tweeters[tweeterCount] = curr;
 	   		tweeterCount++;
    		}
+
+
    	}
 
    	sort_desc(tweeters, tweeterCount);
@@ -71,6 +89,10 @@ int main(int argc, char* argv[]) {
 }
 
 void print_tweeters(tweeter **tweeters, int tweeterCount) {
+
+	if (!tweeters)
+		exit(1);
+
 	for (int i = 0; i < tweeterCount; i++) {
 		printf("%s: %d\n", tweeters[i]->name, tweeters[i]->count);
 	}
@@ -78,6 +100,9 @@ void print_tweeters(tweeter **tweeters, int tweeterCount) {
 }
 
 void sort_desc(tweeter **tweeters, int tweeterCount) {
+
+	if (!tweeters)
+		exit(1);
 
 	for (int i = 0; i < tweeterCount; i++) {                
 		for (int j = 0; j < tweeterCount; j++)          
@@ -111,6 +136,9 @@ int find_name(char *name, tweeter** tweeters, int tweeterCount) {
 
 const char* getfield(char* line, int num)
 {
+	if (!line)
+		exit(1);
+
     const char* tok;
     for (tok = strtok(line, ","); ; tok = strtok(NULL, ",\n"))
     {
@@ -135,7 +163,19 @@ int get_tweeter_col(char *line) {
   		exit(1);
   	}
 
+
 	for (; ; tok = strtok(NULL, ",\n")) {
+
+		if(strlen(tok) < 2) {
+			printf("Invalid Input Format\n");
+  			exit(1);
+		}
+
+		if(tok[0] != '"' || tok[strlen(tok) - 1] != '"') {
+			printf("Invalid Input Format\n");
+  			exit(1);
+		}
+
 		if (strcmp(tok, name) == 0) {
 	  		return count + 1;
 	  	} else {
