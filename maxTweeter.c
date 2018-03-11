@@ -75,8 +75,12 @@ int main(int argc, char* argv[]) {
    	}
 
    	sort_desc(tweeters, tweeterCount);
-   	//print_tweeters(tweeters, tweeterCount);
-   	print_tweeters(tweeters, 10);
+
+   	if (tweeterCount >= 10) {
+		print_tweeters(tweeters, 10);
+   	} else {
+   		print_tweeters(tweeters, tweeterCount);
+   	}
 
    	for(int i = 0; i < tweeterCount; i++) {
    		free(tweeters[i]->name);
