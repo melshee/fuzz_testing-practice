@@ -58,7 +58,14 @@ int main(int argc, char* argv[]) {
    			return -1;
    		}
 
-   		strcpy(name, getfield(line, nameCol));
+   		const char* temp_name = getfield(line, nameCol);
+
+   		if(temp_name == NULL || strlen(temp_name) > 63) {
+   			exit(1);
+   		} else {
+   			strcpy(name, temp_name);
+   		}
+
 
    		if (find_name(name, tweeters, tweeterCount) == 1) {
    			continue;
@@ -162,6 +169,11 @@ int get_tweeter_col(char *line) {
   	char name[7] = "\"name\"\0";
   	tok = strtok(line, ",");
 
+  	if (tok == NULL) {
+  		printf("Invalid Input Format\n");
+  		exit(1);
+  	}
+
   	if (strcmp(tok, "\"\"") != 0) {
   		printf("Invalid Input Format\n");
   		exit(1);
@@ -170,21 +182,23 @@ int get_tweeter_col(char *line) {
 
 	for (; ; tok = strtok(NULL, ",\n")) {
 
-		if(strlen(tok) < 2) {
-			printf("Invalid Input Format\n");
-  			exit(1);
-		}
+		if (tok != NULL) {
+			if(strlen(tok) < 2) {
+				printf("Invalid Input Format\n");
+	  			exit(1);
+			}
 
-		if(tok[0] != '"' || tok[strlen(tok) - 1] != '"') {
-			printf("Invalid Input Format\n");
-  			exit(1);
-		}
+			if(tok[0] != '"' || tok[strlen(tok) - 1] != '"') {
+				printf("Invalid Input Format\n");
+	  			exit(1);
+			}
 
-		if (strcmp(tok, name) == 0) {
-	  		return count + 1;
-	  	} else {
-	  		count++;
-	  	}
+			if (strcmp(tok, name) == 0) {
+		  		return count + 1;
+		  	} else {
+		  		count++;
+		  	}
+		}
 	}
 	return -1;
 }
